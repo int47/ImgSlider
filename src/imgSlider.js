@@ -104,13 +104,28 @@ function launchSlider(sliderId) {
             }
             transformValue += transformStep;
         }
-        slidesCollection.style.transform = 'translateX(' + transformValue + '%)';
+        slidesCollection.style.transform = `translateX(${transformValue}%)`;
     };
 
     function addEventListeners() {
         slider.addEventListener('click', function (e) {
             if (e.target.classList.contains('slider-button')) {
+                e.preventDefault();
                 switchSlide(e.target.classList.contains('next-button') ? 'next' : 'previous');
+            }
+        });
+
+        let startX = 0;
+        slider.addEventListener('touchstart', function (e) {
+            startX = e.changedTouches[0].clientX;
+        });
+        slider.addEventListener('touchend', function (e) {
+            let endX = e.changedTouches[0].clientX,
+                shift = endX - startX;
+            if (shift > 10) {
+                switchSlide('previous');
+            } else if (shift < -10){
+                switchSlide('next');
             }
         });
     };
