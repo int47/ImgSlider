@@ -1,7 +1,7 @@
-function imgSlider(sliderId) {
+function imgSlider(sliderId, options) {
     createSliderLayout(sliderId);
 
-    launchSlider(sliderId);
+    return launchSlider(sliderId, options);
 }
 
 function createSliderLayout(sliderId) {
@@ -45,20 +45,37 @@ function createSliderLayout(sliderId) {
         previousButton.classList.add("slider-button");
         previousButton.innerText = "<";
         previousButton.href = "#";
+        const playpauseButton = document.createElement("a");
+        playpauseButton.classList.add("playpause-button");
+        playpauseButton.classList.add("slider-button");
+        playpauseButton.innerText = "||";
+        playpauseButton.href = "#";
 
         sliderContainer.appendChild(previousButton);
         sliderContainer.appendChild(nextButton);
+        sliderContainer.appendChild(playpauseButton);
     }
 }
 
-function launchSlider(sliderId) {
+function launchSlider(sliderId, options) {
     let slider = document.querySelector(sliderId),
         slidesCollection = slider.querySelector('.slides-collection'),
         singleSlides = slider.querySelectorAll('.single-slide'),
         slidesArray = [],
         currentPosition = 0,
         transformValue = 0,
-        transformStep = 100;
+        transformStep = 100,
+        sliderTimerId,
+        sliderOptions = {
+            autoplayEnabled: false,
+            autoplayInterval: 5000
+        };
+
+    for (let key in options) {
+        if (key in sliderOptions) {
+            sliderOptions[key] = options[key];
+        }
+    }
 
     for (let i = 0; i < singleSlides.length; i++) {
         slidesArray.push({
@@ -109,26 +126,67 @@ function launchSlider(sliderId) {
 
     function addEventListeners() {
         slider.addEventListener('click', function (e) {
-            if (e.target.classList.contains('slider-button')) {
+            if (e.target.classList.contains('playpause-button')) {
+                if (e.target.classList.contains('pausedState')) {
+                    e.target.classList.remove('pausedState');
+                    playSlider();
+                } else {
+                    e.target.classList.add('pausedState');
+                    pauseSlider();
+                }
+            } else if (e.target.classList.contains('slider-button')) {
                 e.preventDefault();
                 switchSlide(e.target.classList.contains('next-button') ? 'next' : 'previous');
+                autoplayStart();
             }
         });
 
         let startX = 0;
         slider.addEventListener('touchstart', function (e) {
             startX = e.changedTouches[0].clientX;
+            autoplayStart();
         });
         slider.addEventListener('touchend', function (e) {
             let endX = e.changedTouches[0].clientX,
                 shift = endX - startX;
             if (shift > 10) {
                 switchSlide('previous');
-            } else if (shift < -10){
+            } else if (shift < -10) {
                 switchSlide('next');
             }
+            autoplayStart();
         });
     };
 
     addEventListeners();
+
+    function autoplayStart() {
+        if (!sliderOptions.autoplayEnabled) {
+            return;
+        }
+        autoplayStop();
+        sliderTimerId = setInterval(function () {
+            switchSlide('next');
+        }, sliderOptions.autoplayInterval);
+    };
+
+    function autoplayStop() {
+        clearInterval(sliderTimerId);
+    };
+
+    autoplayStart();
+
+    function playSlider() {
+        sliderOptions.autoplayEnabled = true;
+        autoplayStart();
+    }
+    function pauseSlider() {
+        sliderOptions.autoplayEnabled = false;
+        autoplayStop();
+    }
+
+    return {
+        play: playSlider,
+        pause: pauseSlider
+    }
 }
