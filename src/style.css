@@ -2,21 +2,66 @@
     overflow: hidden;
     position: relative;
     margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     max-width: 500px;
 }
 
 .slides-collection {
     display: flex;
+    align-self: normal;
     transition: transform 0.5s ease-in-out;
 }
 
 .single-slide {
     flex: 0 0 100%;
     max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .slide-image {
     display: inline-block;
     height: auto;
     max-width: 100%;
+}
+
+.slider-button {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    color: black;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.3);
+    text-decoration: none;
+    transition: transform .2s ease-in-out;
+}
+
+.slider-button:hover {
+    transform: scale(1.2);
+}
+
+.previous-button {
+    left: 0;
+}
+
+.next-button {
+    right: 0;
+}
+
+.playpause-button {
+    display: none;
+    width: 0;
+    height: 0;
+    padding: 20px;
+}
+
+.pausedState {
+    background: orangered;
 }
