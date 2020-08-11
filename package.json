@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Web page slider for images.",
   "main": "imgSlider.js",
-  "scripts": {},
+  "scripts": {
+    "dev": "webpack --mode development"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/int47/ImgSlider.git"
@@ -13,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/int47/ImgSlider/issues"
   },
-  "homepage": "https://github.com/int47/ImgSlider#readme"
+  "homepage": "https://github.com/int47/ImgSlider#readme",
+  "devDependencies": {
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  }
 }
