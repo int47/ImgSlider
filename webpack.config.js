@@ -24,6 +24,21 @@ module.exports = {
                         ]
                     }
                 }]
+            },
+            {
+                test: /\.css$/i,
+                exclude: /node_modules/,
+                use: [{
+                    loader: 'style-loader'
+                },
+                {
+                    loader: 'css-loader',
+                    options: {
+                        modules: {
+                            localIdentName: '[local]'
+                        }
+                    }
+                }]
             }
         ],
     },

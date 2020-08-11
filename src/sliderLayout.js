@@ -1,4 +1,5 @@
 'use strict';
+import css from './style.css'
 
 function createSliderLayout(sliderId) {
     let sliderContainer = document.querySelector(sliderId);
@@ -8,42 +9,42 @@ function createSliderLayout(sliderId) {
 
     if (imgElements.length > 0) {
         const slidesCollection = document.createElement("div");
-        slidesCollection.classList.add("slides-collection");
+        slidesCollection.classList.add(css['slides-collection']);
 
         imgElements.forEach(function (element) {
             if (element.tagName === "IMG") {
-                element.classList.add("slide-image");
+                element.classList.add(css['slide-image']);
                 element.setAttribute("draggable", "false");
 
                 const singleSlideContainer = document.createElement("div");
-                singleSlideContainer.classList.add("single-slide");
+                singleSlideContainer.classList.add(css['single-slide']);
                 singleSlideContainer.appendChild(element);
 
                 slidesCollection.appendChild(singleSlideContainer);
             }
             else {
-                element.classList.add("single-slide");
+                element.classList.add(css['single-slide']);
 
                 slidesCollection.appendChild(element);
             }
         });
 
         sliderContainer.appendChild(slidesCollection);
-        sliderContainer.classList.add("slider");
+        sliderContainer.classList.add(css['slider']);
 
         const nextButton = document.createElement("a");
-        nextButton.classList.add("next-button");
-        nextButton.classList.add("slider-button");
+        nextButton.classList.add(css['next-button']);
+        nextButton.classList.add(css['slider-button']);
         nextButton.innerText = ">";
         nextButton.href = "#";
         const previousButton = document.createElement("a");
-        previousButton.classList.add("previous-button");
-        previousButton.classList.add("slider-button");
+        previousButton.classList.add(css['previous-button']);
+        previousButton.classList.add(css['slider-button']);
         previousButton.innerText = "<";
         previousButton.href = "#";
         const playpauseButton = document.createElement("a");
-        playpauseButton.classList.add("playpause-button");
-        playpauseButton.classList.add("slider-button");
+        playpauseButton.classList.add(css['playpause-button']);
+        playpauseButton.classList.add(css['slider-button']);
         playpauseButton.innerText = "||";
         playpauseButton.href = "#";
 
