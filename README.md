@@ -33,13 +33,13 @@ imgSlider("#slider01", {
 * **maxHeight** (string) - set slider max height in appropriate units. Default value: `'500px'`
 
 ## Usage
-You need to use stylesheet from /src/style.css and script from /src/imgSlider.js
+You need to use only script from /dist/imgSlider.js for your page.
 Then specify the `id` of slider container with content and the object with slider options if necessary:
 ```javascript
 imgSlider("#slider01", {
     autoplayEnabled: true,
     autoplayInterval: 3000,
-    buttonsVisible: false    
+    buttonsVisible: false
 });
 imgSlider("#slider02", {
     maxWidth: '500px',
@@ -55,8 +55,7 @@ imgSlider("#slider03"); // Default values for all options will be used.
 <html>
 
 <head>
-    <link rel="stylesheet" href="./src/style.css">
-    <script src="./src/imgSlider.js"></script>    
+    <script src="./dist/imgSlider.js"></script>
 </head>
 
 <body>
@@ -74,6 +73,6 @@ imgSlider("#slider03"); // Default values for all options will be used.
         });
     </script>
 </body>
-  
+
 </html>
 ```
