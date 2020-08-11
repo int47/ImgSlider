@@ -1,0 +1,17 @@
+{
+  "name": "imgslider",
+  "version": "1.0.0",
+  "description": "Web page slider for images.",
+  "main": "imgSlider.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/int47/ImgSlider.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/int47/ImgSlider/issues"
+  },
+  "homepage": "https://github.com/int47/ImgSlider#readme"
+}
