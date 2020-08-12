@@ -13,19 +13,19 @@ Web page slider for images using css/js
 ## Options
 * **autoplayEnabled** (boolean) - enable or disable slides autoplay. Default value: `false`
 ```javascript
-imgSlider("#slider01", { autoplayEnabled: true })
+imgSlider("slider01", { autoplayEnabled: true })
 ```
 * **autoplayInterval** (number) - set the time in milliseconds before switching a single slide. Default value: `5000`
 ```javascript
-imgSlider("#slider01", { autoplayInterval: 5000 })
+imgSlider("slider01", { autoplayInterval: 5000 })
 ```
 * **buttonsVisible** (boolean) - set visibility of all slider buttons. Default value: `true`
 ```javascript
-imgSlider("#slider01", { buttonsVisible: false })
+imgSlider("slider01", { buttonsVisible: false })
 ```
 * **maxWidth** (string) - set slider max width in appropriate units. Default value: `'500px'`
 ```javascript
-imgSlider("#slider01", {
+imgSlider("slider01", {
     maxWidth: '50%',
     maxHeight: '250px'
 });
@@ -36,16 +36,16 @@ imgSlider("#slider01", {
 You need to use only script from /dist/imgSlider.js for your page.
 Then specify the `id` of slider container with content and the object with slider options if necessary:
 ```javascript
-imgSlider("#slider01", {
+imgSlider("slider01", {
     autoplayEnabled: true,
     autoplayInterval: 3000,
     buttonsVisible: false
 });
-imgSlider("#slider02", {
+imgSlider("slider02", {
     maxWidth: '500px',
     maxHeight: '300px'
 );
-imgSlider("#slider03"); // Default values for all options will be used.
+imgSlider("slider03"); // Default values for all options will be used.
 ```
 
 ### Basic markup
@@ -67,7 +67,7 @@ imgSlider("#slider03"); // Default values for all options will be used.
 
     <script>
         document.addEventListener("DOMContentLoaded", function (event) {
-            imgSlider("#slider01", {
+            imgSlider("slider01", {
                 autoplayEnabled: true
             });
         });
