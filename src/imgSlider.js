@@ -2,36 +2,35 @@
 import createSliderLayout from './sliderLayout.js';
 
 function imgSlider(sliderId, options) {
-    let launchSlider = (function () {
-        return function (sliderId, options) {
+    if (document.getElementById(sliderId) === null) {
+        console.log(`Element with id="${sliderId}" not found.`);
+        return;
+    }
+
+    const launchSlider = (function () {
+        return function (sliderId, {
+            autoplayEnabled = false,
+            autoplayInterval = 5000,
+            buttonsVisible = true,
+            maxWidth = '500px',
+            maxHeight = '500px'
+        }) {
             createSliderLayout(sliderId);
 
-            let slider = document.querySelector(sliderId),
-                slidesCollection = slider.querySelector('.slides-collection'),
-                singleSlides = slider.querySelectorAll('.single-slide'),
-                playpauseButton = slider.querySelector('.playpause-button'),
-                slidesArray = [],
+            const slider = document.getElementById(sliderId),
+                slidesCollection = slider.getElementsByClassName('slides-collection')[0],
+                singleSlides = slider.getElementsByClassName('single-slide'),
+                playpauseButton = slider.getElementsByClassName('playpause-button')[0],
+                transformStep = 100;
+
+            let slidesArray = [],
                 currentPosition = 0,
                 transformValue = 0,
-                transformStep = 100,
                 sliderTimerId,
-                isSlideInTransition = false,
-                sliderOptions = {
-                    autoplayEnabled: false,
-                    autoplayInterval: 5000,
-                    buttonsVisible: true,
-                    maxWidth: '500px',
-                    maxHeight: '500px'
-                };
+                isSlideInTransition = false;
 
-            for (let key in options) {
-                if (key in sliderOptions) {
-                    sliderOptions[key] = options[key];
-                }
-            }
-
-            slider.style.maxWidth = sliderOptions.maxWidth;
-            slider.style.maxHeight = sliderOptions.maxHeight;
+            slider.style.maxWidth = maxWidth;
+            slider.style.maxHeight = maxHeight;
 
             if (singleSlides.length > 0) {
                 for (let i = 0; i < singleSlides.length; i++) {
@@ -43,7 +42,7 @@ function imgSlider(sliderId, options) {
                 }
 
                 if (slidesArray.length === 1) {
-                    let copy = singleSlides[0].cloneNode(true);
+                    const copy = singleSlides[0].cloneNode(true);
                     singleSlides[0].after(copy);
                     slidesArray.push({
                         item: copy,
@@ -58,20 +57,24 @@ function imgSlider(sliderId, options) {
             }
 
 
-            let position = {
-                min: 'min',
-                max: 'max',
-                getSlideIndex: function (value) {
-                    let index = 0;
-                    for (let i = 0; i < slidesArray.length; i++) {
-                        if ((slidesArray[i].position < slidesArray[index].position && value === this.min) || (slidesArray[i].position > slidesArray[index].position && value === this.max)) {
-                            index = i;
-                        }
-                    }
-                    return index;
+            const position = {
+                getMinSlideIndex: function () {
+                    const minSlide = slidesArray.reduce(function (previous, current) {
+                        return (previous.position < current.position) ? previous : current;
+                    });
+                    return slidesArray.indexOf(minSlide);
                 },
-                getSlidePosition: function (value) {
-                    return slidesArray[this.getSlideIndex(value)].position;
+                getMaxSlideIndex: function () {
+                    const maxSlide = slidesArray.reduce(function (previous, current) {
+                        return (previous.position > current.position) ? previous : current;
+                    });
+                    return slidesArray.indexOf(maxSlide);
+                },
+                getMinSlidePosition: function () {
+                    return slidesArray[this.getMinSlideIndex()].position;
+                },
+                getMaxSlidePosition: function () {
+                    return slidesArray[this.getMaxSlideIndex()].position;
                 }
             };
 
@@ -79,18 +82,18 @@ function imgSlider(sliderId, options) {
                 let nextSlide = 0;
                 if (direction === 'next') {
                     currentPosition++;
-                    if (currentPosition > position.getSlidePosition(position.max)) {
-                        nextSlide = position.getSlideIndex(position.min);
-                        slidesArray[nextSlide].position = position.getSlidePosition(position.max) + 1;
+                    if (currentPosition > position.getMaxSlidePosition()) {
+                        nextSlide = position.getMinSlideIndex();
+                        slidesArray[nextSlide].position = position.getMaxSlidePosition() + 1;
                         slidesArray[nextSlide].transform += slidesArray.length * 100;
                         slidesArray[nextSlide].item.style.transform = `translateX(${slidesArray[nextSlide].transform}%)`;
                     }
                     transformValue -= transformStep;
                 } else {
                     currentPosition--;
-                    if (currentPosition < position.getSlidePosition(position.min)) {
-                        nextSlide = position.getSlideIndex(position.max);
-                        slidesArray[nextSlide].position = position.getSlidePosition(position.min) - 1;
+                    if (currentPosition < position.getMinSlidePosition()) {
+                        nextSlide = position.getMaxSlideIndex();
+                        slidesArray[nextSlide].position = position.getMinSlidePosition() - 1;
                         slidesArray[nextSlide].transform -= slidesArray.length * 100;
                         slidesArray[nextSlide].item.style.transform = `translateX(${slidesArray[nextSlide].transform}%)`;
                     }
@@ -154,7 +157,7 @@ function imgSlider(sliderId, options) {
                     autoplayStart();
                 });
                 slider.addEventListener('touchend', function (e) {
-                    let endX = e.changedTouches[0].clientX,
+                    const endX = e.changedTouches[0].clientX,
                         shift = endX - startX;
                     if (shift > 10) {
                         switchSlide('previous');
@@ -169,7 +172,7 @@ function imgSlider(sliderId, options) {
                     autoplayStart();
                 });
                 slider.addEventListener('mouseup', function (e) {
-                    let endX = e.clientX,
+                    const endX = e.clientX,
                         shift = endX - startX;
                     if (shift > 10) {
                         switchSlide('previous');
@@ -179,7 +182,7 @@ function imgSlider(sliderId, options) {
                     autoplayStart();
                 });
 
-                if (sliderOptions.buttonsVisible) {
+                if (buttonsVisible) {
                     slider.addEventListener('mouseenter', function () {
                         playpauseButton.style.display = 'flex';
                     });
@@ -187,7 +190,7 @@ function imgSlider(sliderId, options) {
                         playpauseButton.style.display = 'none';
                     });
                 } else {
-                    sliderButtons = slider.querySelectorAll('.slider-button');
+                    sliderButtons = slider.getElementsByClassName('slider-button');
                     sliderButtons.forEach(function (button) {
                         button.style.display = 'none';
                     });
@@ -197,14 +200,14 @@ function imgSlider(sliderId, options) {
             addEventListeners();
 
             function autoplayStart() {
-                if (!sliderOptions.autoplayEnabled) {
+                if (!autoplayEnabled) {
                     playpauseButton.classList.add('pausedState');
                     return;
                 }
                 autoplayStop();
                 sliderTimerId = setInterval(function () {
                     switchSlide('next');
-                }, sliderOptions.autoplayInterval);
+                }, autoplayInterval);
             };
 
             function autoplayStop() {
@@ -214,11 +217,11 @@ function imgSlider(sliderId, options) {
             autoplayStart();
 
             function playSlider() {
-                sliderOptions.autoplayEnabled = true;
+                autoplayEnabled = true;
                 autoplayStart();
             }
             function pauseSlider() {
-                sliderOptions.autoplayEnabled = false;
+                autoplayEnabled = false;
                 autoplayStop();
             }
 

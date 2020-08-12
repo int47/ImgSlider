@@ -35,7 +35,8 @@ module.exports = {
                     loader: 'css-loader',
                     options: {
                         modules: {
-                            localIdentName: '[local]'
+                            localIdentName: '[local]',
+                            exportLocalsConvention: 'camelCase',
                         }
                     }
                 }]
