@@ -142,11 +142,13 @@ function imgSlider(sliderId, options) {
 
                 playpauseButton.addEventListener('click', function (e) {
                     e.preventDefault();
-                    if (e.target.classList.contains('pausedState')) {
-                        e.target.classList.remove('pausedState');
+                    if (playpauseButton.firstChild.classList.contains('pausedState')) {
+                        playpauseButton.firstChild.classList.remove('pausedState');
+                        playpauseButton.lastChild.style.display = 'none';
                         playSlider();
                     } else {
-                        e.target.classList.add('pausedState');
+                        playpauseButton.firstChild.classList.add('pausedState');
+                        playpauseButton.lastChild.style.display = 'flex';
                         pauseSlider();
                     }
                 });
@@ -201,9 +203,11 @@ function imgSlider(sliderId, options) {
 
             function autoplayStart() {
                 if (!autoplayEnabled) {
-                    playpauseButton.classList.add('pausedState');
+                    playpauseButton.firstChild.classList.add('pausedState');
                     return;
                 }
+                playpauseButton.lastChild.style.display = 'none';
+
                 autoplayStop();
                 sliderTimerId = setInterval(function () {
                     switchSlide('next');

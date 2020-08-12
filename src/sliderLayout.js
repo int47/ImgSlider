@@ -1,5 +1,9 @@
 'use strict';
-import styles from './style.css'
+import styles from './style.css';
+import nextButtonIcon from '../icons/nextButton.svg';
+import previousButtonIcon from '../icons/previousButton.svg';
+import pauseButtonIcon from '../icons/pauseButton.svg';
+import playButtonIcon from '../icons/playButton.svg';
 
 function createSliderLayout(sliderId) {
     let sliderContainer = document.getElementById(sliderId);
@@ -35,17 +39,17 @@ function createSliderLayout(sliderId) {
         const nextButton = document.createElement("a");
         nextButton.classList.add(styles.nextButton);
         nextButton.classList.add(styles.sliderButton);
-        nextButton.innerText = ">";
+        nextButton.innerHTML = nextButtonIcon;
         nextButton.href = "#";
         const previousButton = document.createElement("a");
         previousButton.classList.add(styles.previousButton);
         previousButton.classList.add(styles.sliderButton);
-        previousButton.innerText = "<";
+        previousButton.innerHTML = previousButtonIcon;
         previousButton.href = "#";
         const playpauseButton = document.createElement("a");
         playpauseButton.classList.add(styles.playpauseButton);
         playpauseButton.classList.add(styles.sliderButton);
-        playpauseButton.innerText = "||";
+        playpauseButton.innerHTML = pauseButtonIcon + playButtonIcon;
         playpauseButton.href = "#";
 
         sliderContainer.appendChild(previousButton);
