@@ -16,30 +16,32 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /node-modules/,
-                use: [{
-                    loader: 'babel-loader',
-                    options: {
-                        presets: [
-                            '@babel/preset-env',
-                        ],
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['@babel/preset-env'],
+                        },
                     },
-                }],
+                ],
             },
             {
                 test: /\.css$/i,
                 exclude: /node_modules/,
-                use: [{
-                    loader: 'style-loader',
-                },
-                {
-                    loader: 'css-loader',
-                    options: {
-                        modules: {
-                            localIdentName: '[local]',
-                            exportLocalsConvention: 'camelCase',
+                use: [
+                    {
+                        loader: 'style-loader',
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: {
+                                localIdentName: '[local]',
+                                exportLocalsConvention: 'camelCase',
+                            },
                         },
                     },
-                }],
+                ],
             },
             {
                 test: /\.svg$/,

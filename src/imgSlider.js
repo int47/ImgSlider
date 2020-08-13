@@ -8,13 +8,16 @@ function imgSlider (sliderId, options) {
     }
 
     const launchSlider = (function () {
-        return function (sliderId, {
-            autoplayEnabled = false,
-            autoplayInterval = 5000,
-            buttonsVisible = true,
-            maxWidth = '500px',
-            maxHeight = '500px',
-        }) {
+        return function (
+            sliderId,
+            {
+                autoplayEnabled = false,
+                autoplayInterval = 5000,
+                buttonsVisible = true,
+                maxWidth = '500px',
+                maxHeight = '500px',
+            },
+        ) {
             createSliderLayout(sliderId);
 
             const slider = document.getElementById(sliderId),
@@ -58,13 +61,13 @@ function imgSlider (sliderId, options) {
             const position = {
                 getMinSlideIndex: function () {
                     const minSlide = slidesArray.reduce(function (previous, current) {
-                        return (previous.position < current.position) ? previous : current;
+                        return previous.position < current.position ? previous : current;
                     });
                     return slidesArray.indexOf(minSlide);
                 },
                 getMaxSlideIndex: function () {
                     const maxSlide = slidesArray.reduce(function (previous, current) {
-                        return (previous.position > current.position) ? previous : current;
+                        return previous.position > current.position ? previous : current;
                     });
                     return slidesArray.indexOf(maxSlide);
                 },
@@ -100,7 +103,7 @@ function imgSlider (sliderId, options) {
 
                 slidesCollection.style.transitionDuration = '0.5s';
                 slidesCollection.style.transform = `translateX(${transformValue}%)`;
-            };
+            }
 
             function addEventListeners () {
                 slidesCollection.addEventListener('transitionstart', function () {
@@ -195,7 +198,7 @@ function imgSlider (sliderId, options) {
                         button.style.display = 'none';
                     });
                 }
-            };
+            }
 
             addEventListeners();
 
@@ -210,11 +213,11 @@ function imgSlider (sliderId, options) {
                 sliderTimerId = setInterval(function () {
                     switchSlide('next');
                 }, autoplayInterval);
-            };
+            }
 
             function autoplayStop () {
                 clearInterval(sliderTimerId);
-            };
+            }
 
             autoplayStart();
 
@@ -232,7 +235,7 @@ function imgSlider (sliderId, options) {
                 pause: pauseSlider,
             };
         };
-    }());
+    })();
 
     return launchSlider(sliderId, options);
 }
