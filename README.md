@@ -1,6 +1,12 @@
 # ImgSlider
 Web page slider for images using css/js
 
+[Slider demo](https://int47.github.io/ImgSlider/)
+
+<p align="center">
+  <img src="https://github.com/int47/imgSlider/blob/gh-pages/demo-screenshot.png">
+</p>
+
 ## Features
 * buttons for switching slides
 * autoplay and pause
