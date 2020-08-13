@@ -1,7 +1,7 @@
 'use strict';
 import createSliderLayout from './sliderLayout.js';
 
-function imgSlider(sliderId, options) {
+function imgSlider (sliderId, options) {
     if (document.getElementById(sliderId) === null) {
         console.log(`Element with id="${sliderId}" not found.`);
         return;
@@ -13,7 +13,7 @@ function imgSlider(sliderId, options) {
             autoplayInterval = 5000,
             buttonsVisible = true,
             maxWidth = '500px',
-            maxHeight = '500px'
+            maxHeight = '500px',
         }) {
             createSliderLayout(sliderId);
 
@@ -21,10 +21,10 @@ function imgSlider(sliderId, options) {
                 slidesCollection = slider.getElementsByClassName('slides-collection')[0],
                 singleSlides = slider.getElementsByClassName('single-slide'),
                 playpauseButton = slider.getElementsByClassName('playpause-button')[0],
-                transformStep = 100;
+                transformStep = 100,
+                slidesArray = [];
 
-            let slidesArray = [],
-                currentPosition = 0,
+            let currentPosition = 0,
                 transformValue = 0,
                 sliderTimerId,
                 isSlideInTransition = false;
@@ -37,7 +37,7 @@ function imgSlider(sliderId, options) {
                     slidesArray.push({
                         item: singleSlides[i],
                         position: i,
-                        transform: 0
+                        transform: 0,
                     });
                 }
 
@@ -47,15 +47,13 @@ function imgSlider(sliderId, options) {
                     slidesArray.push({
                         item: copy,
                         position: 1,
-                        transform: 0
+                        transform: 0,
                     });
                 }
-            }
-            else {
+            } else {
                 console.log(`Element ${sliderId} doesn't contain any slides.`);
                 return;
             }
-
 
             const position = {
                 getMinSlideIndex: function () {
@@ -75,10 +73,10 @@ function imgSlider(sliderId, options) {
                 },
                 getMaxSlidePosition: function () {
                     return slidesArray[this.getMaxSlideIndex()].position;
-                }
+                },
             };
 
-            function switchSlide(direction) {
+            function switchSlide (direction) {
                 let nextSlide = 0;
                 if (direction === 'next') {
                     currentPosition++;
@@ -104,7 +102,7 @@ function imgSlider(sliderId, options) {
                 slidesCollection.style.transform = `translateX(${transformValue}%)`;
             };
 
-            function addEventListeners() {
+            function addEventListeners () {
                 slidesCollection.addEventListener('transitionstart', function () {
                     isSlideInTransition = true;
                 });
@@ -192,7 +190,7 @@ function imgSlider(sliderId, options) {
                         playpauseButton.style.display = 'none';
                     });
                 } else {
-                    sliderButtons = slider.getElementsByClassName('slider-button');
+                    const sliderButtons = slider.getElementsByClassName('slider-button');
                     sliderButtons.forEach(function (button) {
                         button.style.display = 'none';
                     });
@@ -201,7 +199,7 @@ function imgSlider(sliderId, options) {
 
             addEventListeners();
 
-            function autoplayStart() {
+            function autoplayStart () {
                 if (!autoplayEnabled) {
                     playpauseButton.firstChild.classList.add('pausedState');
                     return;
@@ -214,26 +212,26 @@ function imgSlider(sliderId, options) {
                 }, autoplayInterval);
             };
 
-            function autoplayStop() {
+            function autoplayStop () {
                 clearInterval(sliderTimerId);
             };
 
             autoplayStart();
 
-            function playSlider() {
+            function playSlider () {
                 autoplayEnabled = true;
                 autoplayStart();
             }
-            function pauseSlider() {
+            function pauseSlider () {
                 autoplayEnabled = false;
                 autoplayStop();
             }
 
             return {
                 play: playSlider,
-                pause: pauseSlider
-            }
-        }
+                pause: pauseSlider,
+            };
+        };
     }());
 
     return launchSlider(sliderId, options);

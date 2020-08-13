@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require('path');
 
 module.exports = {
     context: path.resolve(__dirname, 'src'),
@@ -20,16 +20,16 @@ module.exports = {
                     loader: 'babel-loader',
                     options: {
                         presets: [
-                            '@babel/preset-env'
-                        ]
-                    }
-                }]
+                            '@babel/preset-env',
+                        ],
+                    },
+                }],
             },
             {
                 test: /\.css$/i,
                 exclude: /node_modules/,
                 use: [{
-                    loader: 'style-loader'
+                    loader: 'style-loader',
                 },
                 {
                     loader: 'css-loader',
@@ -37,14 +37,14 @@ module.exports = {
                         modules: {
                             localIdentName: '[local]',
                             exportLocalsConvention: 'camelCase',
-                        }
-                    }
-                }]
+                        },
+                    },
+                }],
             },
             {
                 test: /\.svg$/,
-                loader: 'svg-inline-loader'
-            }
+                loader: 'svg-inline-loader',
+            },
         ],
     },
-}
+};
