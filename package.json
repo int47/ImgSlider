@@ -2,7 +2,7 @@
     "name": "imgslider",
     "version": "1.0.0",
     "description": "Web page slider for images.",
-    "main": "imgSlider.js",
+    "main": "dist/imgSlider.js",
     "scripts": {
         "dev": "webpack --mode development"
     },

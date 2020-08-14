@@ -8,7 +8,7 @@ module.exports = {
         filename: 'imgSlider.js',
         path: path.resolve(__dirname, 'dist'),
         library: 'imgSlider',
-        libraryTarget: 'umd',
+        libraryTarget: 'this',
         libraryExport: 'default',
     },
     module: {

@@ -1,243 +1,246 @@
 'use strict';
 import createSliderLayout from './sliderLayout.js';
 
-function imgSlider (sliderId, options) {
+function imgSlider (
+    sliderId,
+    {
+        autoplayEnabled = false,
+        autoplayInterval = 5000,
+        buttonsVisible = true,
+        maxWidth = '500px',
+        maxHeight = '500px',
+    },
+) {
     if (document.getElementById(sliderId) === null) {
         console.log(`Element with id="${sliderId}" not found.`);
         return;
     }
+    createSliderLayout(sliderId);
 
-    const launchSlider = (function () {
-        return function (
-            sliderId,
-            {
-                autoplayEnabled = false,
-                autoplayInterval = 5000,
-                buttonsVisible = true,
-                maxWidth = '500px',
-                maxHeight = '500px',
-            },
-        ) {
-            createSliderLayout(sliderId);
+    const slider = document.getElementById(sliderId),
+        slidesCollection = slider.getElementsByClassName('slides-collection')[0],
+        singleSlides = slider.getElementsByClassName('single-slide'),
+        playpauseButton = slider.getElementsByClassName('playpause-button')[0],
+        transformStep = 100,
+        slidesArray = [...singleSlides].map((item, position) => ({ item, position, transform: 0 })),
+        slideDirection = { next: 'next', previous: 'previous' };
 
-            const slider = document.getElementById(sliderId),
-                slidesCollection = slider.getElementsByClassName('slides-collection')[0],
-                singleSlides = slider.getElementsByClassName('single-slide'),
-                playpauseButton = slider.getElementsByClassName('playpause-button')[0],
-                transformStep = 100,
-                slidesArray = [];
+    let transformValue = 0,
+        sliderTimerId,
+        isSlideInTransition = false;
 
-            let currentPosition = 0,
-                transformValue = 0,
-                sliderTimerId,
-                isSlideInTransition = false;
+    slider.style.maxWidth = maxWidth;
+    slider.style.maxHeight = maxHeight;
 
-            slider.style.maxWidth = maxWidth;
-            slider.style.maxHeight = maxHeight;
+    if (slidesArray.length === 0) {
+        console.log(`Element ${sliderId} doesn't contain any slides.`);
+        return;
+    } else {
+        if (slidesArray.length === 1) {
+            const copy = singleSlides[0].cloneNode(true);
+            singleSlides[0].after(copy);
+            slidesArray.push({ item: copy, position: 1, transform: 0 });
+        }
+    }
 
-            if (singleSlides.length > 0) {
-                for (let i = 0; i < singleSlides.length; i++) {
-                    slidesArray.push({
-                        item: singleSlides[i],
-                        position: i,
-                        transform: 0,
-                    });
-                }
+    const position = {
+        currentPosition: 0,
+        clearCurrentPosition: function () {
+            position.currentPosition = 0;
+        },
+        nextCurrentPosition: function () {
+            position.currentPosition++;
+        },
+        prevCurrentPosition: function () {
+            position.currentPosition--;
+        },
+        getMinSlideIndex: function () {
+            const minSlide = slidesArray.reduce(function (previous, current) {
+                return previous.position < current.position ? previous : current;
+            });
+            return slidesArray.indexOf(minSlide);
+        },
+        getMaxSlideIndex: function () {
+            const maxSlide = slidesArray.reduce(function (previous, current) {
+                return previous.position > current.position ? previous : current;
+            });
+            return slidesArray.indexOf(maxSlide);
+        },
+        getMinSlidePosition: function () {
+            return slidesArray[this.getMinSlideIndex()].position;
+        },
+        getMaxSlidePosition: function () {
+            return slidesArray[this.getMaxSlideIndex()].position;
+        },
+    };
 
-                if (slidesArray.length === 1) {
-                    const copy = singleSlides[0].cloneNode(true);
-                    singleSlides[0].after(copy);
-                    slidesArray.push({
-                        item: copy,
-                        position: 1,
-                        transform: 0,
-                    });
-                }
-            } else {
-                console.log(`Element ${sliderId} doesn't contain any slides.`);
-                return;
+    function switchSlide (direction) {
+        let nextSlide = 0;
+        if (direction === slideDirection.next) {
+            position.nextCurrentPosition();
+            if (position.currentPosition > position.getMaxSlidePosition()) {
+                nextSlide = position.getMinSlideIndex();
+                slidesArray[nextSlide].position = position.getMaxSlidePosition() + 1;
+                slidesArray[nextSlide].transform += slidesArray.length * 100;
+                slidesArray[nextSlide].item.style.transform = `translateX(${slidesArray[nextSlide].transform}%)`;
             }
-
-            const position = {
-                getMinSlideIndex: function () {
-                    const minSlide = slidesArray.reduce(function (previous, current) {
-                        return previous.position < current.position ? previous : current;
-                    });
-                    return slidesArray.indexOf(minSlide);
-                },
-                getMaxSlideIndex: function () {
-                    const maxSlide = slidesArray.reduce(function (previous, current) {
-                        return previous.position > current.position ? previous : current;
-                    });
-                    return slidesArray.indexOf(maxSlide);
-                },
-                getMinSlidePosition: function () {
-                    return slidesArray[this.getMinSlideIndex()].position;
-                },
-                getMaxSlidePosition: function () {
-                    return slidesArray[this.getMaxSlideIndex()].position;
-                },
-            };
-
-            function switchSlide (direction) {
-                let nextSlide = 0;
-                if (direction === 'next') {
-                    currentPosition++;
-                    if (currentPosition > position.getMaxSlidePosition()) {
-                        nextSlide = position.getMinSlideIndex();
-                        slidesArray[nextSlide].position = position.getMaxSlidePosition() + 1;
-                        slidesArray[nextSlide].transform += slidesArray.length * 100;
-                        slidesArray[nextSlide].item.style.transform = `translateX(${slidesArray[nextSlide].transform}%)`;
-                    }
-                    transformValue -= transformStep;
-                } else {
-                    currentPosition--;
-                    if (currentPosition < position.getMinSlidePosition()) {
-                        nextSlide = position.getMaxSlideIndex();
-                        slidesArray[nextSlide].position = position.getMinSlidePosition() - 1;
-                        slidesArray[nextSlide].transform -= slidesArray.length * 100;
-                        slidesArray[nextSlide].item.style.transform = `translateX(${slidesArray[nextSlide].transform}%)`;
-                    }
-                    transformValue += transformStep;
-                }
-
-                slidesCollection.style.transitionDuration = '0.5s';
-                slidesCollection.style.transform = `translateX(${transformValue}%)`;
+            transformValue -= transformStep;
+        } else {
+            position.prevCurrentPosition();
+            if (position.currentPosition < position.getMinSlidePosition()) {
+                nextSlide = position.getMaxSlideIndex();
+                slidesArray[nextSlide].position = position.getMinSlidePosition() - 1;
+                slidesArray[nextSlide].transform -= slidesArray.length * 100;
+                slidesArray[nextSlide].item.style.transform = `translateX(${slidesArray[nextSlide].transform}%)`;
             }
+            transformValue += transformStep;
+        }
 
-            function addEventListeners () {
-                slidesCollection.addEventListener('transitionstart', function () {
-                    isSlideInTransition = true;
-                });
-                slidesCollection.addEventListener('transitionend', function () {
-                    isSlideInTransition = false;
+        slidesCollection.style.transitionDuration = '0.5s';
+        slidesCollection.style.transform = `translateX(${transformValue}%)`;
+    }
 
-                    if (Math.abs(currentPosition) === slidesArray.length) {
-                        currentPosition = 0;
-                        transformValue = 0;
-                        slidesCollection.style.transitionDuration = '0s';
-                        slidesCollection.style.transform = '';
-                        slidesArray.forEach(function (slide, i) {
-                            slide.position = i;
-                            slide.transform = 0;
-                            slide.item.style = '';
-                        });
-                    }
-                });
+    function addEventListeners () {
+        slidesCollection.addEventListener('transitionstart', function () {
+            isSlideInTransition = true;
+        });
+        slidesCollection.addEventListener('transitionend', function () {
+            isSlideInTransition = false;
 
-                slider.getElementsByClassName('next-button')[0].addEventListener('click', function (e) {
-                    e.preventDefault();
-                    if (!isSlideInTransition) {
-                        switchSlide('next');
-                    }
-                    autoplayStart();
+            if (Math.abs(position.currentPosition) === slidesArray.length) {
+                position.clearCurrentPosition();
+                transformValue = 0;
+                slidesCollection.style.transitionDuration = '0s';
+                slidesCollection.style.transform = '';
+                slidesArray.forEach(function (slide, i) {
+                    slide.position = i;
+                    slide.transform = 0;
+                    slide.item.style = '';
                 });
-
-                slider.getElementsByClassName('previous-button')[0].addEventListener('click', function (e) {
-                    e.preventDefault();
-                    if (!isSlideInTransition) {
-                        switchSlide('previous');
-                    }
-                    autoplayStart();
-                });
-
-                playpauseButton.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    if (playpauseButton.firstChild.classList.contains('pausedState')) {
-                        playpauseButton.firstChild.classList.remove('pausedState');
-                        playpauseButton.lastChild.style.display = 'none';
-                        playSlider();
-                    } else {
-                        playpauseButton.firstChild.classList.add('pausedState');
-                        playpauseButton.lastChild.style.display = 'flex';
-                        pauseSlider();
-                    }
-                });
-
-                let startX = 0;
-                slider.addEventListener('touchstart', function (e) {
-                    startX = e.changedTouches[0].clientX;
-                    autoplayStart();
-                });
-                slider.addEventListener('touchend', function (e) {
-                    const endX = e.changedTouches[0].clientX,
-                        shift = endX - startX;
-                    if (shift > 10) {
-                        switchSlide('previous');
-                    } else if (shift < -10) {
-                        switchSlide('next');
-                    }
-                    autoplayStart();
-                });
-
-                slider.addEventListener('mousedown', function (e) {
-                    startX = e.clientX;
-                    autoplayStart();
-                });
-                slider.addEventListener('mouseup', function (e) {
-                    const endX = e.clientX,
-                        shift = endX - startX;
-                    if (shift > 10) {
-                        switchSlide('previous');
-                    } else if (shift < -10) {
-                        switchSlide('next');
-                    }
-                    autoplayStart();
-                });
-
-                if (buttonsVisible) {
-                    slider.addEventListener('mouseenter', function () {
-                        playpauseButton.style.display = 'flex';
-                    });
-                    slider.addEventListener('mouseleave', function () {
-                        playpauseButton.style.display = 'none';
-                    });
-                } else {
-                    const sliderButtons = slider.getElementsByClassName('slider-button');
-                    sliderButtons.forEach(function (button) {
-                        button.style.display = 'none';
-                    });
-                }
             }
+        });
 
-            addEventListeners();
+        slider.getElementsByClassName('next-button')[0].addEventListener('click', function (e) {
+            e.preventDefault();
+            if (!isSlideInTransition) {
+                switchSlide(slideDirection.next);
+            }
+            clearAutoplayTimer();
+        });
 
-            function autoplayStart () {
-                if (!autoplayEnabled) {
-                    playpauseButton.firstChild.classList.add('pausedState');
-                    return;
-                }
+        slider.getElementsByClassName('previous-button')[0].addEventListener('click', function (e) {
+            e.preventDefault();
+            if (!isSlideInTransition) {
+                switchSlide(slideDirection.previous);
+            }
+            clearAutoplayTimer();
+        });
+
+        playpauseButton.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (playpauseButton.firstChild.classList.contains('pausedState')) {
+                playpauseButton.firstChild.classList.remove('pausedState');
                 playpauseButton.lastChild.style.display = 'none';
-
-                autoplayStop();
-                sliderTimerId = setInterval(function () {
-                    switchSlide('next');
-                }, autoplayInterval);
+                playSlider();
+            } else {
+                playpauseButton.firstChild.classList.add('pausedState');
+                playpauseButton.lastChild.style.display = 'flex';
+                pauseSlider();
             }
+        });
 
-            function autoplayStop () {
-                clearInterval(sliderTimerId);
+        let startX = 0,
+            isMousedownOnSlider = false;
+        function switchSlideByEvent (endX) {
+            const shift = endX - startX;
+            if (shift > 10) {
+                switchSlide(slideDirection.previous);
+            } else if (shift < -10) {
+                switchSlide(slideDirection.next);
             }
+            clearAutoplayTimer();
+        }
+        slider.addEventListener('touchstart', function (e) {
+            startX = e.changedTouches[0].clientX;
+            clearAutoplayTimer();
+        });
+        slider.addEventListener('touchend', function (e) {
+            switchSlideByEvent(e.changedTouches[0].clientX);
+        });
 
-            autoplayStart();
-
-            function playSlider () {
-                autoplayEnabled = true;
-                autoplayStart();
+        slider.addEventListener('mousedown', function (e) {
+            isMousedownOnSlider = true;
+            startX = e.clientX;
+            clearAutoplayTimer();
+        });
+        slider.addEventListener('mouseup', function (e) {
+            isMousedownOnSlider = false;
+            switchSlideByEvent(e.clientX);
+        });
+        slider.addEventListener('mouseleave', function (e) {
+            if (isMousedownOnSlider) {
+                isMousedownOnSlider = false;
+                switchSlideByEvent(e.clientX);
             }
-            function pauseSlider () {
-                autoplayEnabled = false;
-                autoplayStop();
-            }
+        });
 
-            return {
-                play: playSlider,
-                pause: pauseSlider,
-            };
-        };
-    })();
+        if (buttonsVisible) {
+            slider.addEventListener('mouseenter', function () {
+                playpauseButton.style.display = 'flex';
+            });
+            slider.addEventListener('mouseleave', function () {
+                playpauseButton.style.display = 'none';
+            });
+        } else {
+            const sliderButtons = slider.getElementsByClassName('slider-button');
+            sliderButtons.forEach(function (button) {
+                button.style.display = 'none';
+            });
+        }
+    }
 
-    return launchSlider(sliderId, options);
+    addEventListeners();
+
+    function clearAutoplayTimer () {
+        if (!autoplayEnabled) {
+            return;
+        }
+
+        autoplayStop();
+        sliderTimerId = setInterval(function () {
+            switchSlide(slideDirection.next);
+        }, autoplayInterval);
+    }
+
+    function autoplayStart () {
+        if (!autoplayEnabled) {
+            playpauseButton.firstChild.classList.add('pausedState');
+            return;
+        }
+        playpauseButton.lastChild.style.display = 'none';
+
+        clearAutoplayTimer();
+    }
+
+    function autoplayStop () {
+        clearInterval(sliderTimerId);
+    }
+
+    autoplayStart();
+
+    function playSlider () {
+        autoplayEnabled = true;
+        autoplayStart();
+    }
+    function pauseSlider () {
+        autoplayEnabled = false;
+        autoplayStop();
+    }
+
+    return {
+        play: playSlider,
+        pause: pauseSlider,
+    };
 }
 
 export default imgSlider;
