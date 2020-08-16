@@ -1,5 +1,6 @@
 'use strict';
 import createSliderLayout from './sliderLayout.js';
+import SliderPosition from './sliderPosition.js';
 
 function imgSlider (
     sliderId,
@@ -23,7 +24,8 @@ function imgSlider (
         playpauseButton = slider.getElementsByClassName('playpause-button')[0],
         transformStep = 100,
         slidesArray = [...singleSlides].map((item, position) => ({ item, position, transform: 0 })),
-        slideDirection = { next: 'next', previous: 'previous' };
+        slideDirection = { next: 'next', previous: 'previous' },
+        position = new SliderPosition(slidesArray);
 
     let transformValue = 0,
         sliderTimerId,
@@ -42,37 +44,6 @@ function imgSlider (
             slidesArray.push({ item: copy, position: 1, transform: 0 });
         }
     }
-
-    const position = {
-        currentPosition: 0,
-        clearCurrentPosition: function () {
-            position.currentPosition = 0;
-        },
-        nextCurrentPosition: function () {
-            position.currentPosition++;
-        },
-        prevCurrentPosition: function () {
-            position.currentPosition--;
-        },
-        getMinSlideIndex: function () {
-            const minSlide = slidesArray.reduce(function (previous, current) {
-                return previous.position < current.position ? previous : current;
-            });
-            return slidesArray.indexOf(minSlide);
-        },
-        getMaxSlideIndex: function () {
-            const maxSlide = slidesArray.reduce(function (previous, current) {
-                return previous.position > current.position ? previous : current;
-            });
-            return slidesArray.indexOf(maxSlide);
-        },
-        getMinSlidePosition: function () {
-            return slidesArray[this.getMinSlideIndex()].position;
-        },
-        getMaxSlidePosition: function () {
-            return slidesArray[this.getMaxSlideIndex()].position;
-        },
-    };
 
     function switchSlide (direction) {
         let nextSlide = 0;
@@ -125,7 +96,7 @@ function imgSlider (
             if (!isSlideInTransition) {
                 switchSlide(slideDirection.next);
             }
-            clearAutoplayTimer();
+            resetAutoplayTimer();
         });
 
         slider.getElementsByClassName('previous-button')[0].addEventListener('click', function (e) {
@@ -133,7 +104,7 @@ function imgSlider (
             if (!isSlideInTransition) {
                 switchSlide(slideDirection.previous);
             }
-            clearAutoplayTimer();
+            resetAutoplayTimer();
         });
 
         playpauseButton.addEventListener('click', function (e) {
@@ -158,11 +129,11 @@ function imgSlider (
             } else if (shift < -10) {
                 switchSlide(slideDirection.next);
             }
-            clearAutoplayTimer();
+            resetAutoplayTimer();
         }
         slider.addEventListener('touchstart', function (e) {
             startX = e.changedTouches[0].clientX;
-            clearAutoplayTimer();
+            resetAutoplayTimer();
         });
         slider.addEventListener('touchend', function (e) {
             switchSlideByEvent(e.changedTouches[0].clientX);
@@ -171,7 +142,7 @@ function imgSlider (
         slider.addEventListener('mousedown', function (e) {
             isMousedownOnSlider = true;
             startX = e.clientX;
-            clearAutoplayTimer();
+            resetAutoplayTimer();
         });
         slider.addEventListener('mouseup', function (e) {
             isMousedownOnSlider = false;
@@ -201,7 +172,7 @@ function imgSlider (
 
     addEventListeners();
 
-    function clearAutoplayTimer () {
+    function resetAutoplayTimer () {
         if (!autoplayEnabled) {
             return;
         }
@@ -219,7 +190,7 @@ function imgSlider (
         }
         playpauseButton.lastChild.style.display = 'none';
 
-        clearAutoplayTimer();
+        resetAutoplayTimer();
     }
 
     function autoplayStop () {
