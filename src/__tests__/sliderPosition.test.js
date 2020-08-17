@@ -1,14 +1,20 @@
 const SliderPosition = require('../sliderPosition');
 
 describe('Slider position module.', () => {
-    const slidesArray = [];
-    slidesArray.push({ item: {}, position: 0, transform: 0 });
-    slidesArray.push({ item: {}, position: 1, transform: 0 });
-    slidesArray.push({ item: {}, position: 2, transform: 0 });
-    slidesArray.push({ item: {}, position: -2, transform: 0 });
-    slidesArray.push({ item: {}, position: -1, transform: 0 });
+    let slidesArray = [],
+        position = new SliderPosition(slidesArray);
 
-    const position = new SliderPosition(slidesArray);
+    beforeEach(() => {
+        slidesArray = [
+            { item: {}, position: 0, transform: 0 },
+            { item: {}, position: 1, transform: 0 },
+            { item: {}, position: 2, transform: 0 },
+            { item: {}, position: -2, transform: 0 },
+            { item: {}, position: -1, transform: 0 },
+        ];
+
+        position = new SliderPosition(slidesArray);
+    });
 
     test('Returns current position of displayed slide.', () => {
         expect(position.currentPosition).toBe(0);
@@ -21,7 +27,6 @@ describe('Slider position module.', () => {
     });
 
     test('Decrements current position for switching slide backward.', () => {
-        position.prevCurrentPosition();
         position.prevCurrentPosition();
 
         expect(position.currentPosition).toBe(-1);
